@@ -1,0 +1,10 @@
+{
+  "datacenter": "localhost",
+  "bind_addr": "{{ GetInterfaceIP \"eth0\" }}",
+  "client_addr": "{{ GetInterfaceIP \"eth0\" }}",
+  "data_dir": "/tmp/consul",
+  "log_level": "INFO",
+  "bootstrap_expect": 1,
+  "server": true,
+  "ui": true
+}

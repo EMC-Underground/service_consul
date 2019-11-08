@@ -1,0 +1,27 @@
+version: '3.6'
+
+services:
+  consul:
+    image: consul
+    command: agent -config-file=/consul/config/config.json
+    configs:
+      - source: consul_json
+        target: /consul/config/config.json
+        mode: 444
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    networks:
+      - vault-backend
+
+configs:
+  consul_json:
+    file: ./consul/config/consul-config.json
+
+networks:
+  vault-backend:
+    external: true
