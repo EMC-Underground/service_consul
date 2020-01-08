@@ -17,6 +17,13 @@ services:
         condition: on-failure
     networks:
       - vault-backend
+      - traefik-net
+    deploy:
+      labels:
+        - "traefik.frontend.rule=Host:consul.${DNS_SUFFIX}"
+        - "traefik.port=8500"
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
 
 configs:
   consul_json:
@@ -24,4 +31,6 @@ configs:
 
 networks:
   vault-backend:
+    external: true
+  traefik-net:
     external: true
