@@ -20,10 +20,10 @@ services:
       - traefik-net
     deploy:
       labels:
-        - "traefik.frontend.rule=Host:consul.${DNS_SUFFIX}"
-        - "traefik.port=8500"
-        - "traefik.docker.network=traefik-net"
         - "traefik.enable=true"
+        - "traefik.http.routers.traefik.rule=Host(`consul.${DNS_SUFFIX}`)"
+        - "traefik.http.routers.traefik.entrypoints=http"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8500"
 
 configs:
   consul_json:
