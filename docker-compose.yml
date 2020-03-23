@@ -21,9 +21,9 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`consul.${DNS_SUFFIX}`)"
-        - "traefik.http.routers.traefik.entrypoints=http"
-        - "traefik.http.services.traefik.loadbalancer.server.port=8500"
+        - "traefik.http.routers.consul.rule=Host(`consul.${DNS_SUFFIX}`)"
+        - "traefik.http.routers.consul.entrypoints=http"
+        - "traefik.http.services.consul.loadbalancer.server.port=8500"
 
 configs:
   consul_json:
