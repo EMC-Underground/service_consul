@@ -25,7 +25,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.consul.rule=Host(`{{env['DOCKER_SERVICE']}}.{{env['DNS_SUFFIX']}}`)"
+        - "traefik.http.routers.consul.rule=Host(`{{env['DOCKER_STACK']}}.{{env['DNS_SUFFIX']}}`)"
         - "traefik.http.routers.consul.entrypoints=http"
         - "traefik.http.services.consul.loadbalancer.server.port=8500"
 
@@ -41,7 +41,7 @@ volumes:
     driver_opts:
       type: nfs
       o: {{env['NFS_SERVER']}},rw
-      device: ":{{env['NFS_SHARE']}}/consul"
+      device: ":{{env['NFS_SHARE']}}/{{env['DOCKER_STACK']}}"
 {% endif %}
 {%+ endif -%}
 
