@@ -20,7 +20,7 @@ inputs:
   - name: consul_repo
 
 run:
-  path: sh
+  path: bash
   args:
   - -c
   - |
