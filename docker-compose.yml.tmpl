@@ -1,9 +1,13 @@
 version: '3.6'
 
 services:
-  consul:
+  {{env['docker_service']}}:
     image: consul
     command: agent -config-file=/consul/config/config.json
+    {% if env['persistence_driver']|length -%}
+    volumes:
+      - {{env['docker_service']}}-data:/consul/data
+    {%+ endif -%}
     configs:
       - source: consul_json
         target: /consul/config/config.json
@@ -24,6 +28,22 @@ services:
         - "traefik.http.routers.consul.rule=Host(`consul.${DNS_SUFFIX}`)"
         - "traefik.http.routers.consul.entrypoints=http"
         - "traefik.http.services.consul.loadbalancer.server.port=8500"
+
+{% if env['persistence_driver']|length -%}
+volumes:
+  {{env['docker_service']}}-data:
+    {% if env['persistence_driver'] == "vxflex" -%}
+    driver: rexray/scaleio
+    driver_opts:
+      size: 50
+{% elif env['persistence_driver'] == "nfs" -%}
+    driver: local
+    driver_opts:
+      type: nfs
+      o: {{env['nfs_server']}},rw
+      device: ":{{env['nfs_share']}}/consul"
+{% endif %}
+{%+ endif -%}
 
 configs:
   consul_json:
