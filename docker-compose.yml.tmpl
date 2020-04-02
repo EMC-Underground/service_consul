@@ -1,12 +1,12 @@
 version: '3.6'
 
 services:
-  {{env['docker_service']}}:
+  {{env['DOCKER_SERVICE']}}:
     image: consul
     command: agent -config-file=/consul/config/config.json
-    {% if env['persistence_driver']|length -%}
+    {% if env['PERSISTENCE_DRIVER']|length -%}
     volumes:
-      - {{env['docker_service']}}-data:/consul/data
+      - {{env['DOCKER_SERVICE']}}-data:/consul/data
     {%+ endif -%}
     configs:
       - source: consul_json
@@ -25,23 +25,23 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.consul.rule=Host(`consul.${DNS_SUFFIX}`)"
+        - "traefik.http.routers.consul.rule=Host(`{{env['DOCKER_SERVICE']}}.{{env['DNS_SUFFIX']}}`)"
         - "traefik.http.routers.consul.entrypoints=http"
         - "traefik.http.services.consul.loadbalancer.server.port=8500"
 
-{% if env['persistence_driver']|length -%}
+{% if env['PERSISTENCE_DRIVER']|length -%}
 volumes:
-  {{env['docker_service']}}-data:
-    {% if env['persistence_driver'] == "vxflex" -%}
+  {{env['DOCKER_SERVICE']}}-data:
+    {% if env['PERSISTENCE_DRIVER'] == "vxflex" -%}
     driver: rexray/scaleio
     driver_opts:
       size: 50
-{% elif env['persistence_driver'] == "nfs" -%}
+{% elif env['PERSISTENCE_DRIVER'] == "nfs" -%}
     driver: local
     driver_opts:
       type: nfs
-      o: {{env['nfs_server']}},rw
-      device: ":{{env['nfs_share']}}/consul"
+      o: {{env['NFS_SERVER']}},rw
+      device: ":{{env['NFS_SHARE']}}/consul"
 {% endif %}
 {%+ endif -%}
 
