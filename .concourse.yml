@@ -14,7 +14,7 @@ resources:
     stop: 6:00 AM
 
 jobs:
-- name:
+- name: job_deploy_consul
   public: true
   plan:
   - get: consul_repo
