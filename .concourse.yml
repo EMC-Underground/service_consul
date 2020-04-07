@@ -19,7 +19,6 @@ jobs:
   plan:
   - get: consul_repo
   - get: daily
-    trigger: true
   - task: update-consul
     params:
       DNS_SUFFIX: ((dnssuffix))
