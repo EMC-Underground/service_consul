@@ -1,0 +1,56 @@
+version: '3.6'
+
+services:
+  {{env['DOCKER_SERVICE']}}:
+    image: consul
+    command: agent -config-file=/consul/config/config.json
+    {% if env['PERSISTENCE_DRIVER']|length -%}
+    volumes:
+      - {{env['DOCKER_SERVICE']}}-data:/consul/data
+    {%+ endif -%}
+    configs:
+      - source: consul_json
+        target: /consul/config/config.json
+        mode: 444
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    networks:
+      - vault-backend
+      - traefik-net
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.consul.rule=Host(`{{env['DOCKER_STACK']}}.{{env['DNS_SUFFIX']}}`)"
+        - "traefik.http.routers.consul.entrypoints=http"
+        - "traefik.http.services.consul.loadbalancer.server.port=8500"
+
+{% if env['PERSISTENCE_DRIVER']|length -%}
+volumes:
+  {{env['DOCKER_SERVICE']}}-data:
+    {% if env['PERSISTENCE_DRIVER'] == "vxflex" -%}
+    driver: rexray/scaleio
+    driver_opts:
+      size: 50
+{% elif env['PERSISTENCE_DRIVER'] == "nfs" -%}
+    driver: local
+    driver_opts:
+      type: nfs
+      o: {{env['NFS_SERVER']}},rw
+      device: ":{{env['NFS_SHARE']}}/{{env['DOCKER_STACK']}}"
+{% endif %}
+{%+ endif -%}
+
+configs:
+  consul_json:
+    file: ./consul/config/consul-config.json
+
+networks:
+  vault-backend:
+    external: true
+  traefik-net:
+    external: true
