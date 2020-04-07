@@ -28,10 +28,14 @@ run:
     cat docker-compose.yml.tmpl | python3 variables_injector.py > docker-compose.yml
     cat << EOM
     Deploying Docker Stack
-    Stack Name:         ${DOCKER_STACK}
-    Service Name:       ${DOCKER_SERVICE}
-    Persistence Driver: ${PERSISTENCE_DRIVER}
-    Docker Host:        ${DOCKER_HOST}
-    Service URL:        http://${DOCKER_SERVICE}.${DNS_SUFFIX}
+    REPO Info:
+      Branch Name:          ${BRANCH_NAME}
+      Commit Message:       ${COMMIT_MESSAGE}
+    Docker Info:
+      Stack Name:           ${DOCKER_STACK}
+      Service Name:         ${DOCKER_SERVICE}
+      Persistence Driver:   ${PERSISTENCE_DRIVER}
+      Docker Host:          ${DOCKER_HOST}
+      Service URL:        http://${DOCKER_SERVICE}.${DNS_SUFFIX}
     EOM
     bash <(curl -fsSL https://raw.githubusercontent.com/EMC-Underground/service_overlord/master/service_overlord.sh) create_web --stack ${DOCKER_STACK} --service ${DOCKER_SERVICE} --docker_host ${DOCKER_HOST} --dns_suffix ${DNS_SUFFIX}
